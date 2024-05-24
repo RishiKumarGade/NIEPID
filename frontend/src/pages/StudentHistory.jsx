@@ -6,10 +6,13 @@ function StudentHistory(params) {
   const location = useLocation();
   const { hash, pathname, search } = location;
   const navigate = useNavigate();
+  const username  = pathname.split("/")[pathname.split("/").length - 1]
+
+  const [history,setHistory] = useState();
 
   const [UInfo, setUInfo] = useState(null);
     async function getStudentBasicDetails(){
-      await axios.post("http://localhost:4000/getstudentbasicdetails",{username:pathname.split('/')[pathname.split('/').length-1]},{
+      await axios.post("http://localhost:4000/getstudentbasicdetails",{username:username},{
         withCredentials: true
     }).then(res=>{
       if(!res.data.status){
@@ -20,7 +23,11 @@ function StudentHistory(params) {
     })
     }
     async function getStudentHistory(){
-        
+        await axios.post('http://localhost:4000/getstudenthistory',{username:username},{
+          withCredentials:true
+        }).then(res=>{
+          setHistory(res.data.data)
+        })
     }
 
     useEffect(()=>{
@@ -29,12 +36,8 @@ function StudentHistory(params) {
 
   return (
     <div>
-     {UInfo && <>
-     
-     {UInfo.Name}
-     
-     </>}
 
+      {/* TODO code to nicely show the bargraph and history */}
 
     </div>
   )

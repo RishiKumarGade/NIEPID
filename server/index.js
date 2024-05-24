@@ -3,7 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const Routes = require("./routes/Routes");
 const cookieParser = require("cookie-parser");
-const Admin = require("./model/AdminsModel")
+const Admin = require("./model/AdminsModel");
+const { preserverInit } = require("./preserverInit");
 
 const app = express();
 
@@ -27,10 +28,10 @@ mongoose
     console.log(err.message);
   });
 
-async function createAdmin(){
-  await Admin.create({username:"admin"})
-}
-// createAdmin();
+
+preserverInit()
+
+
 
 app.use(
   cors({

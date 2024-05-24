@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { GroupEnums } = require("../constants/enums/GroupEnums");
 
 const studentPromotionSchema = new mongoose.Schema({
     date: {
@@ -12,19 +13,19 @@ const studentPromotionSchema = new mongoose.Schema({
     },
     promoteFromgroup: {
         type: String,
-        enum : ['PRIMARY'], // TODO other groups 
+        enum : GroupEnums, // TODO other groups 
         required: [true, "group is Required"],
     },
     promoteTogroup: {
         type: String,
-        enum : ['PRIMARY'], // TODO other groups 
+        enum : GroupEnums, // TODO other groups 
         required: [true, "group is Required"],
     },
-      report:{
+    report:{
           type: mongoose.Schema.Types.ObjectId,
           ref: "reports",
           required: [true, "report id is Required"],
-      }
+    }
   });
 
   module.exports = mongoose.model("studentPromotions", studentPromotionSchema)

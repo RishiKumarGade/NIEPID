@@ -3,9 +3,7 @@ const multer = require('multer');
 const { addTeachers, addStudents } = require("../controllers/addDetailsController");
 const { updateStudentDetails, updateTeacherDetails } = require("../controllers/updateDetailsController");
 const { studentevaluation } = require("../controllers/studentEvaluation");
-const { promoteStudents } = require("../controllers/promoteStudents");
-
-
+const { initializeTermYear } = require("../controllers/initializeTermYear");
 
 
 const { checkUser } = require("../middlewares/authMiddleware");
@@ -17,6 +15,9 @@ const { checkIfTeacherorAdminMiddleware } = require("../middlewares/checkIfTeach
 const { getAssignedStudents } = require("../getters/getAssignedStudents");
 const { getStudentBasicDetails } = require("../getters/getStudentBasicDetails");
 const { getStudentHistory } = require("../getters/getStudentHistory");
+const { getStudentEvaluation } = require("../getters/getStudentEvaluation");
+
+
 
 
 
@@ -42,13 +43,15 @@ router.post("/updatestudentdetails",checkIfStudent,updateStudentDetails )
 router.post("/updateteacherdetails",checkIfTeacher,updateTeacherDetails )
 
 router.post("/studentevaluation",checkIfTeacher,studentevaluation)
-
-router.post("/promotestudents",checkIfTeacher,promoteStudents)
-
+    
 router.post("/getassignedstudents",checkIfTeacher,getAssignedStudents)
 
 router.post("/getstudentbasicdetails",checkIfTeacher,getStudentBasicDetails)
+router.post("/getstudentevaluation",checkIfTeacher,getStudentEvaluation)
 
+
+
+router.post("/inittermyear",checkIfAdmin,initializeTermYear)
 
 router.post("/admin",checkIfAdmin,(req,res,next) =>{
     res.json({username:req.username,status:req.status});

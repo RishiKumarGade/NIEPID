@@ -1,12 +1,22 @@
 const mongoose = require("mongoose");
+const { GroupEnums } = require("../constants/enums/GroupEnums");
+const { AnswerEnums } = require("../constants/enums/AnswerEnums");
+const { TermYearEnums } = require("../constants/enums/TermYearEnums");
+
+
 
 const ReportSchema = new mongoose.Schema({
   tests: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "areaQuestionAnswers",
-      required: [true, "Q id is Required"],
-    },
+      question:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "questions",
+      },
+      answer: {
+        type: String,
+        enum :AnswerEnums, // TODO other answers 
+      }
+    }
   ],
   student: {
     type: String,
@@ -14,19 +24,22 @@ const ReportSchema = new mongoose.Schema({
     required: [true, "Student Required"],
   },
   termYear: {
-    type: String,
-    enum: ["21"], // TODO other termyears
+    type: Number,
+    enum: TermYearEnums, // TODO other termyears
     required: [true, "termyear is Required"],
   },
   dateOfEvaluation: {
     type: Date,
-    required: [true, "date of evaluation is Required"],
   },
   group: {
     type: String,
-    enum : ['PRIMARY'], // TODO other GRoup 
+    enum : GroupEnums, // TODO other GRoup 
     required: [true, "Group is Required"],
   },
+  checked:{
+    type: Boolean,
+    default:false
+  }
 });
 
 module.exports = mongoose.model("reports", ReportSchema);

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../model/userModel");
+const { GroupEnums } = require("../constants/enums/GroupEnums");
+
 
 const teacherSchema = new mongoose.Schema({
   username: {
@@ -20,7 +22,7 @@ const teacherSchema = new mongoose.Schema({
   },
   assignedGroup:{
       type: String,
-      enum : ['PRIMARY'], // TODO other groups 
+      enum : GroupEnums, // TODO other groups 
   }
 });
 

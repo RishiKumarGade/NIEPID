@@ -121,7 +121,6 @@ function Class() {
                 <p>{student}</p>
                 <a href={`eval/${student}`}>eval</a><br />
                 <a href={`hist/${student}`}>hist</a>
-
               </div>
             );
           })}

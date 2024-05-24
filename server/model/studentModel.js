@@ -25,7 +25,6 @@ const studentSchema = new mongoose.Schema({
     ,
     Education: {
       type: String
-
     },
   });
 
