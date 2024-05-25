@@ -1,1 +1,1 @@
-module.exports.GroupEnums = ['PRIMARY']
+module.exports.GroupEnums = ['PRIMARY',"OTHER"]

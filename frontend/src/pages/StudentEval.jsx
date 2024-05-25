@@ -66,6 +66,7 @@ function StudentEval(params) {
       )
       .then((res) => {
         if (res.data.status) {
+          console.log(res.data.data);
           setReports(res.data.data);
         } else console.log("error fetch details");
       });
@@ -173,7 +174,7 @@ function StudentEval(params) {
                               onChange={(e) => handleAreaChange(report._id,test._id,e.target.value)}
                             >
                               <option value="">--Please choose an option--</option>
-                              <option value="PRIMARY">PRIMARY</option>
+                              <option value="PERSONAL">PERSONAL</option>
                             </select>
                                   <select
                               id="answers"

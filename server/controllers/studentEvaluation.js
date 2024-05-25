@@ -1,6 +1,6 @@
 const Report = require("../model/ReportModel");
 const Question = require("../model/QuestionModel");
-const {PromoteStudent} = require("../helper/PromoteStudent")
+const { PromoteStudents} = require("../helper/PromoteStudent")
 const {calculatePercentage} = require("../helper/CalculatePercentage")
 
 
@@ -48,13 +48,14 @@ module.exports.studentevaluation = async (req, res, next) => {
         tests: tests,
         dateOfEvaluation: Date.now(),
       }
-    ).then(async(a) => {
+    ).populate("tests.question").then(async(a) => {
       let c = false
       if (checked) {
-        const p = await calculatePercentage(a._id)
-        c =  PromoteStudent(a._id,p)
+        const p = await calculatePercentage(a.tests)
+        console.log(p)
+        c = await PromoteStudents(studentusername,p)
       }
-      if(!c){
+      if(c){
         await Report.findOneAndUpdate(
           {
             student: studentusername,
@@ -62,7 +63,7 @@ module.exports.studentevaluation = async (req, res, next) => {
             group: group,
           },
           {
-            checked:false,
+            checked:true,
           }
         )
       }

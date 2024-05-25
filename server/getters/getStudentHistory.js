@@ -12,14 +12,10 @@ module.exports.getStudentHistory = async(req,res,next)=>{
             if(!student){
                 res.json({message:"there is no student"})
             }else{
-                const hist = await StudentPromotion.find({student:student.username}).populate('report')
+                const hist = await StudentPromotion.find({student:student.username}).populate('report').populate('tests')
                 res.json({data:hist,status:req.status,username:req.username})
             }
         } catch (error) {
             return
         }
 }
-
-
-
-  
