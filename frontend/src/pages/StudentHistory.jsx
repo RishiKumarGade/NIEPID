@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GroupEnums } from '../constants/enums/GroupEnums';
+import { TermYearEnums } from '../constants/enums/TermYearEnums';
+
 
 function StudentHistory(params) {
   const location = useLocation();
@@ -8,36 +11,30 @@ function StudentHistory(params) {
   const navigate = useNavigate();
   const username  = pathname.split("/")[pathname.split("/").length - 1]
 
-  const [history,setHistory] = useState();
+  const [reports,setReports] = useState();
 
-  const [UInfo, setUInfo] = useState(null);
-    async function getStudentBasicDetails(){
-      await axios.post("http://localhost:4000/getstudentbasicdetails",{username:username},{
-        withCredentials: true
-    }).then(res=>{
-      if(!res.data.status){
-        navigate('/class')
-      }else{
-        setUInfo(res.data.data)
-      }
-    })
-    }
-    async function getStudentHistory(){
-        await axios.post('http://localhost:4000/getstudenthistory',{username:username},{
+  const [yearGraphDatas,setYearGraphDatas] =useState();
+
+  useEffect(async()=>{
+    await getAllReports()
+  },[])
+
+  useEffect(()=>{
+
+    
+  },[reports])
+  
+
+    async function getAllReports(){
+        await axios.post('http://localhost:4000/getallreports',{username:username},{
           withCredentials:true
         }).then(res=>{
-          setHistory(res.data.data)
+          setReports(res.data.data)
+          console.log(res.data.data)
         })
     }
-
-    useEffect(()=>{
-      getStudentBasicDetails();
-    },[])
-
   return (
     <div>
-
-      {/* TODO code to nicely show the bargraph and history */}
 
     </div>
   )

@@ -6,8 +6,7 @@ const Teacher = require("../model/teacherModel");
 const ReportModel = require("../model/ReportModel");
 const StudentGroupModel = require('../model/StudentGroupModel');
 const { testQuestions } = require('../helper/testQuestions');
-
-
+const {HandleValidityofStudent,HandleValidityofTeacher} = require("../helper/HandleValidity")
 
 module.exports.addTeachers = async (req, res, next) => {
   try {
@@ -28,7 +27,13 @@ module.exports.addTeachers = async (req, res, next) => {
       data.map(async(row)=>{
         let teacher = {}
         Object.keys(row).forEach((key)=>{
-          teacher[key] = row[key];
+          const validkey = HandleValidityofTeacher(key,row[key]);
+          if(!validkey){
+            res.json({success:false,data:check,message:"Please again check the rows,there are some invalid keys,values"})
+            return
+          }else{
+            teacher[key] = row[key];
+          }
         })
         await Teacher.create(teacher).then(s=>{
         })
@@ -55,10 +60,17 @@ module.exports.addStudents = async (req, res, next) => {
           data.map(async(row)=>{
             let student = {}
         Object.keys(row).forEach((key)=>{
-          if(key !== "Group")
-          student[key] = row[key];
+          if(key !== "Group"){
+            const validkey = HandleValidityofStudent(key,row[key]);
+          if(!validkey){
+            res.json({success:false,data:check,message:"Please again check the rows,there are some invalid keys,values"})
+            return
+          }else{
+            student[key] = row[key];
+          }
+          }
         })
-           await testQuestions().then(async(tests)=>{
+           await testQuestions({area:row.Group}).then(async(tests)=>{
               await Student.create(student).then(async(s)=>{
                 await StudentGroupModel.create({student:student.username,group:row.Group}).then(async(s)=>{
                   await ReportModel.create({
@@ -72,7 +84,6 @@ module.exports.addStudents = async (req, res, next) => {
                 })
               })
             })
-            
           })
         }
       } catch (error) {

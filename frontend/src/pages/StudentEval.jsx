@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import getCurrentUser from "../helpers/CurrentUser";
+import { toast } from 'react-toastify'
+import { AreaEnums } from "../constants/enums/AreaEnums" ;
+import { AnswerEnums } from "../constants/enums/AnswerEnums" ;
 
 function StudentEval(params) {
   const location = useLocation();
@@ -16,6 +20,13 @@ function StudentEval(params) {
   const [extraArea, setExtraArea] = useState("");
 
   const [Submission, setSubmission] = useState(null);
+
+  const [User,setUser] = useState();
+
+  useEffect(async()=>{
+    // await getCurrentUser();
+    await getStudentBasicDetails();
+  },[])
 
   async function getStudentBasicDetails() {
     await axios
@@ -37,6 +48,10 @@ function StudentEval(params) {
   async function SubmitEvaluation(check) {
     reports.map(async (report) => {
       if (report._id == Submission) {
+        if(report.checked){
+          toast.error("this report has already been evaluated")
+          return 
+        }
         await axios
           .post(
             "http://localhost:4000/studentevaluation",
@@ -79,6 +94,10 @@ function StudentEval(params) {
     }
     reports.map((report) => {
       if (report._id == Submission) {
+        if(report.checked){
+          toast.error("this report has already been evaluated")
+          return 
+        }
         report.tests.push({
           question: { _id:generateRandomId(), question: extraQuestion, area: extraArea },
           answer: extraAnswer,
@@ -140,6 +159,7 @@ function StudentEval(params) {
 
   return (
     <div>
+      {/* TODO upgrade designs of input fields and other stuff  */}
       {reports.length > 0 && (
         <>
           {reports.map((report, i) => {
@@ -174,7 +194,10 @@ function StudentEval(params) {
                               onChange={(e) => handleAreaChange(report._id,test._id,e.target.value)}
                             >
                               <option value="">--Please choose an option--</option>
-                              <option value="PERSONAL">PERSONAL</option>
+                            {AreaEnums.map((a)=>{
+                              if(a!="")
+                              return <option value={`${a}`}>{a}</option>
+                            })}
                             </select>
                                   <select
                               id="answers"
@@ -182,7 +205,10 @@ function StudentEval(params) {
                               onChange={(e) => handleAnswerChange(report._id,test._id,e.target.value)}
                             >
                               <option value="">--Please choose an option--</option>
-                              <option value="YES">YES</option>
+                              {AnswerEnums.map((a)=>{
+                              if(a!="")
+                              return <option value={`${a}`}>{a}</option>
+                            })}
                             </select>
                             </div>
                           );
@@ -203,7 +229,10 @@ function StudentEval(params) {
                         }}
                       >
                         <option value="">--Please choose an option--</option>
-                        <option value="PERSONAL">PERSONAL</option>
+                        {AreaEnums.map((a)=>{
+                              if(a!="")
+                              return <option value={`${a}`}>{a}</option>
+                            })}
                       </select>
                       <select
                         id="answers"
@@ -211,11 +240,12 @@ function StudentEval(params) {
                         onChange={(e) => setExtraAnswer(e.target.value)}
                       >
                         <option value="">--Please choose an option--</option>
-                        <option value="YES">YES</option>
+                        {AnswerEnums.map((a)=>{
+                              if(a!="")
+                              return <option value={`${a}`}>{a}</option>
+                            })}
                       </select>
                       <button onClick={addQuestion}>Add Question</button>
-                      {/* TODO code to add another question to the report and submit it  : completed*/}
-
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -234,8 +264,6 @@ function StudentEval(params) {
                         {" "}
                         Submit and proceed to evaluation{" "}
                       </button>
-
-                      {/* TODO buttons to save the progress and another for submit and proceed to promotion */}
                     </div>
                   </div>
                 ) : (
@@ -251,7 +279,16 @@ function StudentEval(params) {
                       }}
                     >
                       {" "}
-                      {report._id}{" "}
+                       Report for the{" "}
+                       {report.termYear%10 == 0 && <> Entry Level of </> }
+                       {report.termYear%10 == 1 && <> First Level of </> }
+                       {report.termYear%10 == 2 && <> Second Level of </> }
+                       {report.termYear%10 == 3 && <> Third Level of </> }
+                       {report.termYear/10 == 1 && <> First Year </> }
+                       {report.termYear/10 == 2 && <> Second Year </> }
+                       {report.termYear/10 == 3 && <> Third Year</> }
+                        {report.checked ? <> Already Submitted </> : <> Not Yet Submitted </>}
+                       
                     </h5>
                   </>
                 )}

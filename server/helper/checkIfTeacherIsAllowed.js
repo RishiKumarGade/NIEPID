@@ -13,8 +13,6 @@ module.exports.checkIfTeacherIsAllowed = (req, res, next) => {
           next();
         } else {
           const user = await User.findOne({username:decodedToken.username});
-          
-          
           if (user) res.json({ status: true, user: user.username });
           else res.json({ status: false });
           next();

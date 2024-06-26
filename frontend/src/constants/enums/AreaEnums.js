@@ -1,3 +1,3 @@
 module.exports.AreaEnums = ['PERSONAL']
 
-// TODO add other area enums
+// TODO add other area constants

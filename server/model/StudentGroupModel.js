@@ -4,7 +4,7 @@ const { GroupEnums } = require("../constants/enums/GroupEnums");
 const studentGroupsSchema = new mongoose.Schema({
     group: {
       type: String,
-      enum : GroupEnums, // TODO other GRoup 
+      enum : GroupEnums, 
       required: [true, "Group is Required"],
     
     },

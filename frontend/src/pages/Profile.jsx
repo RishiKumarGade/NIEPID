@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-
+import { useLocation } from 'react-router-dom';
+ import flattenStudentData from '../helpers/flattenStudentData'
 const useStyles = createUseStyles({
     registrationForm: {
         display: 'flex',
@@ -58,7 +60,22 @@ const useStyles = createUseStyles({
     },
 });
 
-const RegistrationForm = () => {
+function Profile(params) {
+    const location = useLocation();
+    const { hash, pathname, search } = location;
+    const username = pathname.split("/")[pathname.split("/").length - 1];
+    const [isEditing,setIsEditing]  = useState(true);
+
+    async function getStudentDetails(){
+        await axios.post('http://localhost:4000/getstudentdetails',{username:username},{withCredentials:true}).then((response) => {
+            setFormData(flattenStudentData(response.data.data));
+        })
+    }
+
+    useEffect(async()=>{
+        await getStudentDetails();
+    },[])
+    
     const classes = useStyles();
     const [formData, setFormData] = useState({
         purposeVisit: '',
@@ -214,16 +231,24 @@ const RegistrationForm = () => {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form Data Submitted:', formData);
+    const handleSubmit = async(e) => {
+        if(isEditing){
+            e.preventDefault();
+            await axios.post('http://localhost:4000/updatestudentdetails',{...formData,student:username},{
+                withCredentials:true
+            } )
+        }else{
+            setIsEditing(false);
+        }
+        
     };
 
     return (
-        <form onSubmit={handleSubmit} className={classes.registrationForm}>
+        <form className={classes.registrationForm}>
+            <button onClick={handleSubmit} > {isEditing ? " save" :"edit"} </button>
             <label className={classes.label}>
                 Purpose Visit:
-                <input
+                <input disabled={!isEditing} 
                     type="text"
                     name="purposeVisit"
                     value={formData.purposeVisit}
@@ -233,7 +258,7 @@ const RegistrationForm = () => {
             </label>
             <label className={classes.label}>
                 Previous Consultations and Treatment:
-                <input
+                <input disabled={!isEditing}
                     type="checkbox"
                     name="previousConsultations"
                     checked={formData.previousConsultations}
@@ -243,7 +268,7 @@ const RegistrationForm = () => {
             </label>
             <label className={classes.label}>
                 Nature of Consultations:
-                <input
+                <input disabled={!isEditing}
                     type="text"
                     name="natureOfConsultations"
                     value={formData.natureOfConsultations}
@@ -253,7 +278,7 @@ const RegistrationForm = () => {
             </label>
             <label className={classes.label}>
                 Treatment Undergone:
-                <input
+                <input disabled={!isEditing}
                     type="checkbox"
                     name="treatmentUndergone"
                     checked={formData.treatmentUndergone}
@@ -263,7 +288,7 @@ const RegistrationForm = () => {
             </label>
             <label className={classes.label}>
                 Type of Treatment:
-                <input
+                <input disabled={!isEditing}
                     type="text"
                     name="typeOfTreatment"
                     value={formData.typeOfTreatment}
@@ -273,7 +298,7 @@ const RegistrationForm = () => {
             </label>
             <label className={classes.label}>
                 Therapeutic:
-                <input
+                <input disabled={!isEditing}
                     type="text"
                     name="therapeutic"
                     value={formData.therapeutic}
@@ -293,7 +318,7 @@ const RegistrationForm = () => {
                         <tr key={index}>
                             <td className={classes.td}>{index + 1}</td>
                             <td className={classes.td}>
-                                <input
+                                <input disabled={!isEditing}
                                     type="text"
                                     name="description"
                                     value={condition.description}
@@ -320,7 +345,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Has dysmorphic features</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hasDysmorphicFeatures"
                                 value={formData.hasDysmorphicFeatures}
@@ -329,7 +354,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hasDysmorphicFeaturesDuration"
                                 value={formData.hasDysmorphicFeaturesDuration}
@@ -341,7 +366,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Small sized head</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="smallSizedHead"
                                 value={formData.smallSizedHead}
@@ -350,7 +375,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="smallSizedHeadDuration"
                                 value={formData.smallSizedHeadDuration}
@@ -362,7 +387,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Able to walk and run</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ableToWalkAndRun"
                                 value={formData.ableToWalkAndRun}
@@ -371,7 +396,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ableToWalkAndRunDuration"
                                 value={formData.ableToWalkAndRunDuration}
@@ -383,7 +408,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>No age appropriate comprehension and speech development</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="noAgeAppropriateComprehensionAndSpeechDevelopment"
                                 value={formData.noAgeAppropriateComprehensionAndSpeechDevelopment}
@@ -392,7 +417,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="noAgeAppropriateComprehensionAndSpeechDevelopmentDuration"
                                 value={formData.noAgeAppropriateComprehensionAndSpeechDevelopmentDuration}
@@ -404,7 +429,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Reaches, grasps and manipulates objects</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="reachesGraspsAndManipulatesObjects"
                                 value={formData.reachesGraspsAndManipulatesObjects}
@@ -413,7 +438,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="reachesGraspsAndManipulatesObjectsDuration"
                                 value={formData.reachesGraspsAndManipulatesObjectsDuration}
@@ -425,7 +450,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Emotionally attached to parents</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="emotionallyAttachedToParents"
                                 value={formData.emotionallyAttachedToParents}
@@ -434,7 +459,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="emotionallyAttachedToParentsDuration"
                                 value={formData.emotionallyAttachedToParentsDuration}
@@ -446,7 +471,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Has adequate eye contact and social smile</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hasAdequateEyeContactAndSocialSmile"
                                 value={formData.hasAdequateEyeContactAndSocialSmile}
@@ -455,7 +480,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hasAdequateEyeContactAndSocialSmileDuration"
                                 value={formData.hasAdequateEyeContactAndSocialSmileDuration}
@@ -467,7 +492,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Eats self</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="eatsSelf"
                                 value={formData.eatsSelf}
@@ -476,7 +501,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="eatsSelfDuration"
                                 value={formData.eatsSelfDuration}
@@ -488,7 +513,7 @@ const RegistrationForm = () => {
                     <tr>
                         <td className={classes.td}>Indicates toilet needs</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="indicatesToiletNeeds"
                                 value={formData.indicatesToiletNeeds}
@@ -497,7 +522,7 @@ const RegistrationForm = () => {
                             />
                         </td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="indicatesToiletNeedsDuration"
                                 value={formData.indicatesToiletNeedsDuration}
@@ -522,7 +547,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Chromosomal Aberrations</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="chromosomalAberrations"
                                 value={formData.chromosomalAberrations}
@@ -535,7 +560,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Rh incompatibility</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="rhIncompatibility"
                                 value={formData.rhIncompatibility}
@@ -548,7 +573,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Genetic Aberrations</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="geneticAberrations"
                                 value={formData.geneticAberrations}
@@ -561,7 +586,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Consanguinity</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="consanguinity"
                                 value={formData.consanguinity}
@@ -585,7 +610,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Threatened abortion</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="threatenedAbortion"
                                 value={formData.threatenedAbortion}
@@ -598,7 +623,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Potentially harmful medication</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="harmfulMedication"
                                 value={formData.harmfulMedication}
@@ -611,7 +636,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Antenatal Check Ups</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="antenatalCheckUps"
                                 value={formData.antenatalCheckUps}
@@ -624,7 +649,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Significant Accidents/Injury</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantAccidents"
                                 value={formData.significantAccidents}
@@ -637,7 +662,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Infections</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="infections"
                                 value={formData.infections}
@@ -650,7 +675,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Pregnancy</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="pregnancy"
                                 value={formData.pregnancy}
@@ -663,7 +688,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Attempted abortion</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="attemptedAbortion"
                                 value={formData.attemptedAbortion}
@@ -676,7 +701,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>8</td>
                         <td className={classes.td}>Nutrition</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="nutrition"
                                 value={formData.nutrition}
@@ -689,7 +714,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>9</td>
                         <td className={classes.td}>Psychological Trauma</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="psychologicalTrauma"
                                 value={formData.psychologicalTrauma}
@@ -702,7 +727,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>10</td>
                         <td className={classes.td}>Amniotic Fluid</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="amnioticFluid"
                                 value={formData.amnioticFluid}
@@ -715,7 +740,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>11</td>
                         <td className={classes.td}>Irradiation</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="irradiation"
                                 value={formData.irradiation}
@@ -728,7 +753,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>12</td>
                         <td className={classes.td}>Nicotine</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="nicotine"
                                 value={formData.nicotine}
@@ -741,7 +766,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>13</td>
                         <td className={classes.td}>Alcohol</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="alcohol"
                                 value={formData.alcohol}
@@ -754,7 +779,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>14</td>
                         <td className={classes.td}>Age at conception</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ageAtConception"
                                 value={formData.ageAtConception}
@@ -767,7 +792,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>15</td>
                         <td className={classes.td}>Hypertension</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hypertension"
                                 value={formData.hypertension}
@@ -780,7 +805,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>16</td>
                         <td className={classes.td}>Diabetes</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="diabetes"
                                 value={formData.diabetes}
@@ -793,7 +818,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>17</td>
                         <td className={classes.td}>Jaundice</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="jaundice"
                                 value={formData.jaundice}
@@ -806,7 +831,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>18</td>
                         <td className={classes.td}>Fetal movements</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="fetalMovements"
                                 value={formData.fetalMovements}
@@ -819,7 +844,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>19</td>
                         <td className={classes.td}>Bleeding during late Pregnancy</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="bleedingLatePregnancy"
                                 value={formData.bleedingLatePregnancy}
@@ -843,7 +868,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Labour Duration</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="labourDuration"
                                 value={formData.labourDuration}
@@ -856,7 +881,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Prolapsed cord</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="prolapsedCord"
                                 value={formData.prolapsedCord}
@@ -869,7 +894,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Cord Around Neck</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="cordAroundNeck"
                                 value={formData.cordAroundNeck}
@@ -882,7 +907,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Multiple Pregnancies</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="multiplePregnancies"
                                 value={formData.multiplePregnancies}
@@ -895,7 +920,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Feeding problems</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="feedingProblems"
                                 value={formData.feedingProblems}
@@ -908,7 +933,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Convulsions</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="convulsions"
                                 value={formData.convulsions}
@@ -921,7 +946,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Color of the baby</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="colorOfTheBaby"
                                 value={formData.colorOfTheBaby}
@@ -934,7 +959,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>8</td>
                         <td className={classes.td}>Significant Injury</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantInjury"
                                 value={formData.significantInjury}
@@ -947,7 +972,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>9</td>
                         <td className={classes.td}>Delivery place</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="deliveryPlace"
                                 value={formData.deliveryPlace}
@@ -960,7 +985,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>10</td>
                         <td className={classes.td}>Term</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="term"
                                 value={formData.term}
@@ -973,7 +998,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>11</td>
                         <td className={classes.td}>Delivery type</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="deliveryType"
                                 value={formData.deliveryType}
@@ -986,7 +1011,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>12</td>
                         <td className={classes.td}>Abnormal Presentation</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="abnormalPresentation"
                                 value={formData.abnormalPresentation}
@@ -999,7 +1024,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>13</td>
                         <td className={classes.td}>Respiratory distress</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="respiratoryDistress"
                                 value={formData.respiratoryDistress}
@@ -1012,7 +1037,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>14</td>
                         <td className={classes.td}>Jaundice</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="jaundice"
                                 value={formData.jaundice}
@@ -1025,7 +1050,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>15</td>
                         <td className={classes.td}>Delivery Conducted By</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="deliveryConductedBy"
                                 value={formData.deliveryConductedBy}
@@ -1038,7 +1063,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>16</td>
                         <td className={classes.td}>Labour induction</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="labourInduction"
                                 value={formData.labourInduction}
@@ -1051,7 +1076,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>17</td>
                         <td className={classes.td}>Birth cry</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="birthCry"
                                 value={formData.birthCry}
@@ -1064,7 +1089,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>18</td>
                         <td className={classes.td}>Infections</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="infections"
                                 value={formData.infections}
@@ -1077,7 +1102,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>19</td>
                         <td className={classes.td}>Seperation from Mother immediately after delivery</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="seperationFromMother"
                                 value={formData.seperationFromMother}
@@ -1101,7 +1126,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Jaundice</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="jaundice"
                                 value={formData.jaundice}
@@ -1114,7 +1139,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Thyroid Dysfunctions</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="thyroidDysfunctions"
                                 value={formData.thyroidDysfunctions}
@@ -1127,7 +1152,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Nutritional disorders</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="nutritionalDisorders"
                                 value={formData.nutritionalDisorders}
@@ -1140,7 +1165,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Convulsions</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="convulsions"
                                 value={formData.convulsions}
@@ -1153,7 +1178,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Infections</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="infections"
                                 value={formData.infections}
@@ -1166,7 +1191,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Significant head injury</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantHeadInjury"
                                 value={formData.significantHeadInjury}
@@ -1190,7 +1215,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Type of Family</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="typeOfFamily"
                                 value={formData.typeOfFamily}
@@ -1203,7 +1228,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Mental retardation</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="mentalRetardation"
                                 value={formData.mentalRetardation}
@@ -1216,7 +1241,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Genogram</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="genogran"
                                 value={formData.genogran}
@@ -1229,7 +1254,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Consanguinity</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="consanguinity"
                                 value={formData.consanguinity}
@@ -1242,7 +1267,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Seizures Or Convulsions</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="seizuresOrConvulsions"
                                 value={formData.seizuresOrConvulsions}
@@ -1255,7 +1280,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Hearing problems</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="hearingProblems"
                                 value={formData.hearingProblems}
@@ -1268,7 +1293,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Speech problems</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="speechProblems"
                                 value={formData.speechProblems}
@@ -1281,7 +1306,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>8</td>
                         <td className={classes.td}>Mental Illness</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="mentalIllness"
                                 value={formData.mentalIllness}
@@ -1294,7 +1319,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>9</td>
                         <td className={classes.td}>Autism Or Spectrum Disorder</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="autismOrSpectrumDisorder"
                                 value={formData.autismOrSpectrumDisorder}
@@ -1307,7 +1332,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>10</td>
                         <td className={classes.td}>Visual problems</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="visualProblems"
                                 value={formData.visualProblems}
@@ -1320,7 +1345,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>11</td>
                         <td className={classes.td}>Locomotor problem</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="locomotorProblem"
                                 value={formData.locomotorProblem}
@@ -1333,7 +1358,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>12</td>
                         <td className={classes.td}>Any Family history of delay/disability/disorder/disease/deficiency</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="anyFamilyHistory"
                                 value={formData.anyFamilyHistory}
@@ -1346,7 +1371,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>13</td>
                         <td className={classes.td}>Learning disabilities</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="learningDisabilities"
                                 value={formData.learningDisabilities}
@@ -1370,7 +1395,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Family Involvement in</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="familyInvolvement"
                                 value={formData.familyInvolvement}
@@ -1383,7 +1408,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Positive Issues with neighborhood because of the client</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="positiveIssues"
                                 value={formData.positiveIssues}
@@ -1396,7 +1421,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Neighbourhood Participation</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="neighbourhoodParticipation"
                                 value={formData.neighbourhoodParticipation}
@@ -1409,7 +1434,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Personal needs of the client</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="personalNeedsOfTheClient"
                                 value={formData.personalNeedsOfTheClient}
@@ -1422,7 +1447,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Visits to the family by others</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="visitsToTheFamilyByOthers"
                                 value={formData.visitsToTheFamilyByOthers}
@@ -1435,7 +1460,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Family's visits outside</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="familyVisitOutside"
                                 value={formData.familyVisitOutside}
@@ -1448,7 +1473,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Play and Leisure Time Activities</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="playAndLeisureTimeActivities"
                                 value={formData.playAndLeisureTimeActivities}
@@ -1461,7 +1486,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>8</td>
                         <td className={classes.td}>Educational activities</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="educationalActivities"
                                 value={formData.educationalActivities}
@@ -1474,7 +1499,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>9</td>
                         <td className={classes.td}>Support of extended family</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="supportOfExtendedFamily"
                                 value={formData.supportOfExtendedFamily}
@@ -1487,7 +1512,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>10</td>
                         <td className={classes.td}>Negative Issues with neighbourhood because of the client</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="negativeIssuesWithNeighbour"
                                 value={formData.negativeIssuesWithNeighbour}
@@ -1511,7 +1536,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Discontinued School</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="discontinuedSchool"
                                 value={formData.discontinuedSchool}
@@ -1524,7 +1549,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Educational History</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="educationalHistory"
                                 value={formData.educationalHistory}
@@ -1537,7 +1562,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Teachers report/School report(in case of non avail)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="teacherReport"
                                 value={formData.teacherReport}
@@ -1550,7 +1575,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Overall Performance</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="overallPerformance"
                                 value={formData.overallPerformance}
@@ -1563,7 +1588,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Type of Schooling</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="typeOfSchooling"
                                 value={formData.typeOfSchooling}
@@ -1576,7 +1601,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>If Yes Reason for discontinuing Schooling</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ReasonForDiscontinuingSchooling "
                                 value={formData.ReasonForDiscontinuingSchooling}
@@ -1589,7 +1614,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Age Of Admission into school(in Years)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ageOfAdmission"
                                 value={formData.ageOfAdmission}
@@ -1613,7 +1638,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Involvement in Play</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="involvementInPlay"
                                 value={formData.involvementInPlay}
@@ -1626,7 +1651,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Observes others playing</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="observesOthersPlaying"
                                 value={formData.observesOthersPlaying}
@@ -1639,7 +1664,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Play Behaviour</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="playBehaviour"
                                 value={formData.playBehaviour}
@@ -1663,7 +1688,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Periodicity</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="periodicity"
                                 value={formData.periodicity}
@@ -1676,7 +1701,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Age of Attainment of menarche</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="ageofAttainmentOfMenarche"
                                 value={formData.ageofAttainmentOfMenarche}
@@ -1689,7 +1714,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Attained Menarche</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="attainedMenarche"
                                 value={formData.attainedMenarche}
@@ -1702,7 +1727,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Menstrual History</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="menstrualHistory"
                                 value={formData.menstrualHistory}
@@ -1715,7 +1740,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Any Significant Details</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="anySignificantDetails"
                                 value={formData.anySignificantDetails}
@@ -1739,7 +1764,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Vocational training</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="vocationalTraining"
                                 value={formData.vocationalTraining}
@@ -1752,7 +1777,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Occupational History(Client)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="occupationalHistory"
                                 value={formData.occupationalHistory}
@@ -1765,7 +1790,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Employment</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="employment"
                                 value={formData.employment}
@@ -1789,7 +1814,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Head Control:(3-5 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="headControl"
                                 value={formData.headControl}
@@ -1802,7 +1827,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Rolling:(3-5 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="rolling"
                                 value={formData.rolling}
@@ -1815,7 +1840,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Independent Sitting:(6-8 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="independentSitting"
                                 value={formData.independentSitting}
@@ -1828,7 +1853,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Crawling:(6-8 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="crawling"
                                 value={formData.crawling}
@@ -1841,7 +1866,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Walking:(11-14 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="walking"
                                 value={formData.walking}
@@ -1865,7 +1890,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Bilateral Holding Of Toys(3-6 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="bilateralHoldingOfToys"
                                 value={formData.bilateralHoldingOfToys}
@@ -1878,7 +1903,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Holding small items with finger and thumb(6-9 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="holdingSmallItems"
                                 value={formData.holdingSmallItems}
@@ -1891,7 +1916,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Scribbling with a crayon(12-18 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="scribblingWithCrayon"
                                 value={formData.scribblingWithCrayon}
@@ -1915,7 +1940,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Babbling(4-8 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="babbling"
                                 value={formData.babbling}
@@ -1928,7 +1953,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>First Words(11-12 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="firstWords"
                                 value={formData.firstWords}
@@ -1941,7 +1966,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Two words phrases(18-24 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="twoWordsPhrases"
                                 value={formData.twoWordsPhrases}
@@ -1954,7 +1979,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Sentences(2yrs 6 months-3 years)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="sentences"
                                 value={formData.sentences}
@@ -1978,7 +2003,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Smiles at others(2-4 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="smilesAtOthers"
                                 value={formData.smilesAtOthers}
@@ -1991,7 +2016,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Responds to Name(7-12 Months)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="respondsToName"
                                 value={formData.respondsToName}
@@ -2004,7 +2029,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Feeds Self(3-4 years)</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="feedSelf"
                                 value={formData.feedSelf}
@@ -2028,7 +2053,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>1</td>
                         <td className={classes.td}>Cognitive</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="cognitive"
                                 value={formData.cognitive}
@@ -2041,7 +2066,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>2</td>
                         <td className={classes.td}>Motor</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="motor"
                                 value={formData.motor}
@@ -2054,7 +2079,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>3</td>
                         <td className={classes.td}>Speech And Language</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="speechAndLanguage"
                                 value={formData.speechAndLanguage}
@@ -2067,7 +2092,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>4</td>
                         <td className={classes.td}>Social</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="social"
                                 value={formData.social}
@@ -2080,7 +2105,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>5</td>
                         <td className={classes.td}>Significant Medical illness</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantMedicalIllness"
                                 value={formData.significantMedicalIllness}
@@ -2093,7 +2118,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>6</td>
                         <td className={classes.td}>Significant Surgical illness</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantSurgicalIllness"
                                 value={formData.significantSurgicalIllness}
@@ -2106,7 +2131,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>7</td>
                         <td className={classes.td}>Significant Psycological illness</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="significantPsycologicalIllness"
                                 value={formData.significantPsycologicalIllness}
@@ -2119,7 +2144,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>8</td>
                         <td className={classes.td}>Any negative reactions/allergy to medication?</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="negativeReactionToMedication"
                                 value={formData.negativeReactionToMedication}
@@ -2132,7 +2157,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>9</td>
                         <td className={classes.td}>Autism Or Spectrum Disorder</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="autismOrSpectrumDisorder"
                                 value={formData.autismOrSpectrumDisorder}
@@ -2145,7 +2170,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>10</td>
                         <td className={classes.td}>Visual problems</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="visualProblems"
                                 value={formData.visualProblems}
@@ -2158,7 +2183,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>11</td>
                         <td className={classes.td}>Locomotor problem</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="locomotorProblem"
                                 value={formData.locomotorProblem}
@@ -2171,7 +2196,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>12</td>
                         <td className={classes.td}>Any Family history of delay/disability/disorder/disease/deficiency</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="anyFamilyHistory"
                                 value={formData.anyFamilyHistory}
@@ -2184,7 +2209,7 @@ const RegistrationForm = () => {
                         <td className={classes.td}>13</td>
                         <td className={classes.td}>Learning disabilities</td>
                         <td className={classes.td}>
-                            <input
+                            <input disabled={!isEditing}
                                 type="text"
                                 name="learningDisabilities"
                                 value={formData.learningDisabilities}
@@ -2195,8 +2220,9 @@ const RegistrationForm = () => {
                     </tr>
                 </tbody>
             </table>
+
         </form>
     );
 };
 
-export default RegistrationForm;
+export default Profile;

@@ -14,7 +14,7 @@ const ReportSchema = new mongoose.Schema({
       },
       answer: {
         type: String,
-        enum :AnswerEnums, // TODO other answers 
+        enum :AnswerEnums, 
       }
     }
   ],
@@ -25,7 +25,7 @@ const ReportSchema = new mongoose.Schema({
   },
   termYear: {
     type: Number,
-    enum: TermYearEnums, // TODO other termyears
+    enum: TermYearEnums, 
     required: [true, "termyear is Required"],
   },
   dateOfEvaluation: {
@@ -33,7 +33,7 @@ const ReportSchema = new mongoose.Schema({
   },
   group: {
     type: String,
-    enum : GroupEnums, // TODO other GRoup 
+    enum : GroupEnums, 
     required: [true, "Group is Required"],
   },
   checked:{

@@ -38,9 +38,10 @@ export default function Home() {
   return (
     <>
       <div >
+        {/* TODO: design something cool , Navbar , navbar should contain logout admin link and class link heading and other shit */}
         <button onClick={logOut}>Log out</button>
-
-
+        <a href="/admin"> Go To Admin Panel</a>
+        <a href="/class"> Go To Class Panel</a>
       </div>
     </>
   );

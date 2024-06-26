@@ -38,24 +38,25 @@ function Class() {
   }, [cookies, navigate, removeCookie]);
 
   useEffect(() => {
-    async function getDetails() {
-      try {
-        await axios
-          .post("http://localhost:4000/getassignedstudents",{},{
-            withCredentials: true,
-          })
-          .then((response) => {
-            if (response.data.status) setStudents(response.data.data);
-            else {
-            }
-          });
-      } catch (error) {
-        toast.error(error);
-      }
-    }
-
+    
     getDetails();
   }, []);
+  async function getDetails() {
+    try {
+      await axios
+        .post("http://localhost:4000/getassignedstudents",{},{
+          withCredentials: true,
+        })
+        .then((response) => {
+          if (response.data.status) setStudents(response.data.data);
+          else {
+          }
+        });
+    } catch (error) {
+      toast.error(error);
+    }
+  }
+
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -89,6 +90,8 @@ function Class() {
         // navigate("/");
       } else {
         toast.success("File uploaded successfully");
+        getDetails();
+
       }
     } catch (error) {
       toast.error("Error uploading file");
@@ -111,6 +114,8 @@ function Class() {
         </form>
       </div>
 
+      {/* TODO seperate this registration and students into a block,design a list to show students */}
+
       {students.length > 0 && (
         <>
           <div>Your Students</div>
@@ -125,6 +130,7 @@ function Class() {
             );
           })}
         </>
+        // TODO come good looking shit
       )}
     </div>
   );

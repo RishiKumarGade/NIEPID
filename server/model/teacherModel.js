@@ -22,7 +22,7 @@ const teacherSchema = new mongoose.Schema({
   },
   assignedGroup:{
       type: String,
-      enum : GroupEnums, // TODO other groups 
+      enum : GroupEnums, 
   }
 });
 

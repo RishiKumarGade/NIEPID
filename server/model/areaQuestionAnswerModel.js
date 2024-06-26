@@ -10,7 +10,7 @@ const areaQuestionAnswerSchema = new mongoose.Schema({
     },
     answer: {
       type: String,
-      enum : AnswerEnums, // TODO other answers 
+      enum : AnswerEnums,
       required: [true, "Answer is Required"],
     
     },

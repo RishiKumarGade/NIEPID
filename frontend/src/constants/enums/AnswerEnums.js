@@ -1,3 +1,3 @@
 module.exports.AnswerEnums = ['YES',""]
 
-// TODO add other answer enums
+// TODO add other answer constants

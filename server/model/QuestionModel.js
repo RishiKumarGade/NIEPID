@@ -8,7 +8,7 @@ const QuestionSchema = new mongoose.Schema({
     },
     area: {
       type: String,
-      enum : AreaEnums, // TODO other areas
+      enum : AreaEnums, 
       required: [true, "Area is Required"],
     },
   });

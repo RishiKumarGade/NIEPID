@@ -1,7 +1,10 @@
+const { default: mongoose } = require("mongoose");
 const { questions } = require("./constants/questions/questions");
 const { testQuestions } = require("./helper/testQuestions");
 const AdminsModel = require("./model/AdminsModel");
 const QuestionModel = require("./model/QuestionModel");
+
+
 
 module.exports.preserverInit = async()=>{
   createAdmin();

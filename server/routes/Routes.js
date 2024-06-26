@@ -16,6 +16,9 @@ const { getAssignedStudents } = require("../getters/getAssignedStudents");
 const { getStudentBasicDetails } = require("../getters/getStudentBasicDetails");
 const { getStudentHistory } = require("../getters/getStudentHistory");
 const { getStudentEvaluation } = require("../getters/getStudentEvaluation");
+const { getAllReports } = require("../getters/getAllReports");
+
+const { getStudentDetails } = require("../getters/getStudentDetails");
 
 
 
@@ -39,15 +42,17 @@ router.post("/addteachers",checkIfAdmin,upload.single('file'), addTeachers);
 router.post("/addstudents",checkIfTeacherorAdminMiddleware,upload.single('file'), addStudents);
 
 
-router.post("/updatestudentdetails",checkIfStudent,updateStudentDetails )
+router.post("/updatestudentdetails",checkIfTeacher,updateStudentDetails )
 router.post("/updateteacherdetails",checkIfTeacher,updateTeacherDetails )
 
 router.post("/studentevaluation",checkIfTeacher,studentevaluation)
     
 router.post("/getassignedstudents",checkIfTeacher,getAssignedStudents)
 
-router.post("/getstudentbasicdetails",checkIfTeacher,getStudentBasicDetails)
+router.post("/getstudentdetails",checkIfTeacher,getStudentDetails)
 router.post("/getstudentevaluation",checkIfTeacher,getStudentEvaluation)
+router.post("/getallreports",checkIfTeacher,getAllReports)
+
 
 
 

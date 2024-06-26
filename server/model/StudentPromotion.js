@@ -13,12 +13,12 @@ const studentPromotionSchema = new mongoose.Schema({
     },
     promoteFromgroup: {
         type: String,
-        enum : GroupEnums, // TODO other groups 
+        enum : GroupEnums, 
         required: [true, "group is Required"],
     },
     promoteTogroup: {
         type: String,
-        enum : GroupEnums, // TODO other groups 
+        enum : GroupEnums, 
         required: [true, "group is Required"],
     },
     report:{

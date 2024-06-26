@@ -11,7 +11,6 @@ module.exports.getStudentEvaluation = async (req, res, next) => {
     } else {
       const reports = await Report.find({
         student: student.username,
-        checked:false 
       }).populate('tests.question');
       res.json({ data: reports, status: req.status, username: req.username });
     }
